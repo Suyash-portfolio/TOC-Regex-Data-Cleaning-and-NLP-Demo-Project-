@@ -1,0 +1,143 @@
+REGEX-BASED DATA CLEANING AND INFORMATION EXTRACTION
+Roll No.: 0055 | Application Area: Data Cleaning and NLP
+
+IMPORTANT
+These are test strings for the report. To test the program, run `python regex_demo.py` and enter one complete test string when the program prompts `Input text:`. The program extracts matches; it does not display a separate pass/fail result for every individual string.
+
+1. INDIAN MOBILE NUMBER
+Pattern:
+(?<!\d)(?:\+91[-\s]?)?[6-9][0-9]{9}(?!\d)
+
+Meaning:
+- (?<!\d): the match must not be immediately preceded by a digit.
+- (?:...)? : an optional non-capturing group.
+- \+91: the literal country code +91.
+- [-\s]?: an optional hyphen or whitespace after the country code.
+- [6-9]: the first digit of the 10-digit mobile number must be 6, 7, 8, or 9.
+- [0-9]{9}: exactly nine more digits.
+- (?!\d): the match must not be immediately followed by another digit.
+
+Valid test strings:
+1. 9876543210
+2. 8765432109
+3. +91 9123456789
+4. +91-9876543210
+5. 9988776655
+
+Invalid test strings:
+1. 1234567890 — starts with a digit outside 6–9.
+2. 987654321 — only nine digits.
+3. 5987654321 — starts with 5.
+4. 12345 67890 — contains a space, so there are not ten consecutive digits.
+5. 98765ABC10 — contains letters instead of only digits.
+
+Note: This pattern checks a common Indian mobile-number format, not whether a number is active or assigned.
+
+2. DATE (DD/MM/YYYY OR DD-MM-YYYY)
+Pattern:
+(?<!\d)(?:0?[1-9]|[12][0-9]|3[01])[-/](?:0?[1-9]|1[0-2])[-/](?:19|20)[0-9]{2}(?!\d)
+
+Meaning:
+- (?<!\d): no digit immediately before the date.
+- (?:0?[1-9]|[12][0-9]|3[01]): day 1–31, allowing an optional leading zero for days 1–9.
+- [-/]: a hyphen or slash separator.
+- (?:0?[1-9]|1[0-2]): month 1–12, allowing an optional leading zero for months 1–9.
+- [-/]: the second separator.
+- (?:19|20)[0-9]{2}: a year from 1900 through 2099.
+- (?!\d): no digit immediately after the date.
+- The Python program also checks calendar validity using datetime.strptime and rejects mixed separators.
+
+Valid test strings:
+1. 29/10/2026
+2. 15-08-2025
+3. 01/01/2000
+4. 28/02/2024
+5. 31-12-2026
+
+Invalid test strings:
+1. 31/02/2026 — February does not have 31 days.
+2. 29/02/2025 — 2025 is not a leap year.
+3. 32/01/2026 — day is outside 1–31.
+4. 15/13/2026 — month is outside 1–12.
+5. 12/05-2026 — uses mixed separators; the program rejects this format.
+
+3. HTTP/HTTPS URL
+Pattern:
+https?://[^\s<>"']+
+
+Meaning:
+- https? : matches `http` followed by an optional `s`, so both HTTP and HTTPS are accepted.
+- :// : matches the literal URL separator.
+- [^\s<>"'] : matches a character other than whitespace, angle brackets, double quote, or single quote.
+- + : requires one or more such characters after the scheme.
+- re.IGNORECASE in the Python code makes the pattern case-insensitive.
+- The program removes common trailing punctuation such as a period or comma from the extracted URL.
+
+Valid test strings:
+1. https://example.com
+2. http://mitaoe.ac.in
+3. https://www.python.org
+4. https://mitaoe.ac.in/student
+5. http://example.com/page?id=10
+
+Invalid test strings:
+1. example.com — no HTTP/HTTPS scheme.
+2. www.example.com — no HTTP/HTTPS scheme.
+3. ftp://example.com — FTP is not accepted by this pattern.
+4. htp://example.com — misspelled scheme.
+5. https:// — no URL characters after the scheme.
+
+4. EMAIL ADDRESS
+Pattern:
+\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b
+
+Meaning:
+- \b: word boundary at the beginning.
+- [A-Za-z0-9._%+-]+: one or more permitted characters before @.
+- @: the literal at-sign.
+- [A-Za-z0-9.-]+: one or more letters, digits, dots, or hyphens in the domain portion before the final dot.
+- \. : a literal dot.
+- [A-Za-z]{2,}: at least two letters for the final domain suffix.
+- \b: word boundary at the end.
+
+Valid test strings:
+1. student@example.com
+2. student_01@mit.edu
+3. test@gmail.com
+4. suyash.h@example.org
+5. info+test@company.co.in
+
+Invalid test strings:
+1. abc@ — no domain or suffix.
+2. @example.com — no local part before @.
+3. user@localhost — no dot and suffix.
+4. user@example.c — suffix has only one letter.
+5. user example.com — missing @.
+
+Note: This is a basic pattern for common email formats, not a complete implementation of every email-address standard.
+
+5. HASHTAG
+Pattern:
+#[A-Za-z][A-Za-z0-9_]*
+
+Meaning:
+- # : requires the hashtag symbol.
+- [A-Za-z] : the first character after # must be an English letter.
+- [A-Za-z0-9_]* : allows zero or more additional letters, digits, or underscores.
+
+Valid test strings:
+1. #DataCleaning
+2. #NLPProject
+3. #AI_2026
+4. #Regex
+5. #DataScience
+
+Invalid test strings:
+1. #123 — first character after # is not a letter.
+2. # — no text after the hashtag symbol.
+3. #_Data — begins with an underscore, not a letter.
+4. #-NLP — begins with a hyphen, not a letter.
+5. hello# — no letter follows the hashtag symbol.
+
+TESTING REMINDER
+For the assignment, include screenshots from the actual Python run. The report must contain the five regex explanations and all 50 test strings (25 valid and 25 invalid). Also include the NFA/DFA work and the demo screenshots required by the teacher's email.
